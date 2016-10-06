@@ -47,6 +47,8 @@ public class IDPSignInContainerActivity extends IDPBaseActivity implements IDPPr
         super.onCreate(savedInstanceState);
         mProvider = getIntent().getStringExtra(ExtraConstants.EXTRA_PROVIDER);
         mEmail = getIntent().getStringExtra(ExtraConstants.EXTRA_EMAIL);
+        FlowParameters flowParameters =
+            getIntent().getParcelableExtra(ExtraConstants.EXTRA_FLOW_PARAMS);
         IDPProviderParcel providerParcel = null;
         for (IDPProviderParcel parcel : mActivityHelper.getFlowParams().providerInfo) {
             if (parcel.getProviderType().equalsIgnoreCase(mProvider)) {
@@ -60,9 +62,11 @@ public class IDPSignInContainerActivity extends IDPBaseActivity implements IDPPr
             return;
         }
         if (mProvider.equalsIgnoreCase(FacebookAuthProvider.PROVIDER_ID)) {
-            mIDPProvider = new FacebookProvider(this, providerParcel);
+            mIDPProvider = new FacebookProvider(
+                this, providerParcel, flowParameters.additionalFacebookPermissions);
         } else if (mProvider.equalsIgnoreCase(GoogleAuthProvider.PROVIDER_ID)) {
-            mIDPProvider = new GoogleProvider(this, providerParcel, mEmail);
+            mIDPProvider = new GoogleProvider(
+                this, providerParcel, mEmail, flowParameters.additionalGooglePermissions);
         }
         mIDPProvider.setAuthenticationCallback(this);
         mIDPProvider.startLogin(this);
